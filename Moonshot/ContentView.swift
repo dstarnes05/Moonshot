@@ -16,47 +16,100 @@ struct ContentView: View {
         GridItem(.adaptive(minimum: 150))
     ]
     
+    @State private var showingGrid = true
+    
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                LazyVGrid(columns: columns){
-                    ForEach(missions) { mission in
-                        NavigationLink {
-                            MissionView(mission: mission, astronauts: astronauts)
-                        } label: {
-                            VStack {
-                                Image(mission.image)
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 100, height: 100)
-                                    .padding()
-                                
-                                VStack {
-                                    Text(mission.displayName)
-                                        .font(.headline)
-                                        .foregroundStyle(.white)
-                                    
-                                    Text(mission.formattedLaunchDate)
-                                        .font(.caption)
-                                        .foregroundStyle(.gray)
+        
+        Group {
+            if showingGrid {
+                NavigationStack {
+                    ScrollView {
+                        LazyVGrid(columns: columns){
+                            ForEach(missions) { mission in
+                                NavigationLink {
+                                    MissionView(mission: mission, astronauts: astronauts)
+                                } label: {
+                                    VStack {
+                                        Image(mission.image)
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(width: 100, height: 100)
+                                            .padding()
+                                        
+                                        VStack {
+                                            Text(mission.displayName)
+                                                .font(.headline)
+                                                .foregroundStyle(.white)
+                                            
+                                            Text(mission.formattedLaunchDate)
+                                                .font(.caption)
+                                                .foregroundStyle(.gray)
+                                        }
+                                        .padding(.vertical)
+                                        .frame(maxWidth: .infinity)
+                                        .background(.lightBackground)
+                                    }
+                                    .clipShape(.rect(cornerRadius: 10))
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 10)
+                                            .stroke(.lightBackground)
+                                        )
                                 }
-                                .padding(.vertical)
-                                .frame(maxWidth: .infinity)
-                                .background(.lightBackground)
                             }
-                            .clipShape(.rect(cornerRadius: 10))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .stroke(.lightBackground)
-                                )
+                        }
+                        .padding([.horizontal, .bottom])
+                    }
+                    .navigationTitle("Moonshot")
+                    .background(.darkBackground)
+                    .preferredColorScheme(.dark)
+                    .toolbar {
+                        Button("List View") {
+                            showingGrid.toggle()
                         }
                     }
                 }
-                .padding([.horizontal, .bottom])
+            } else {
+                NavigationStack {
+                        List {
+                            ForEach(missions) { mission in
+                                NavigationLink {
+                                    MissionView(mission: mission, astronauts: astronauts)
+                                } label: {
+                                    HStack {
+                                        VStack {
+                                            Text(mission.displayName)
+                                                .font(.headline)
+                                                .foregroundStyle(.white)
+                                            
+                                            Text(mission.formattedLaunchDate)
+                                                .font(.caption)
+                                                .foregroundStyle(.gray)
+                                        }
+                                        
+                                        Spacer()
+                                        
+                                        Image(mission.image)
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(width: 60, height: 60)
+                                            .padding()
+                                }
+                            }
+                        }
+                            .listRowBackground(Color.darkBackground)
+                    }
+                        .navigationTitle("Moonshot")
+                        .listStyle(.plain)
+                        .scrollContentBackground(.hidden)
+                        .background(Color.darkBackground)
+                        .preferredColorScheme(.dark)
+                        .toolbar {
+                            Button("Grid View") {
+                                showingGrid.toggle()
+                            }
+                        }
+                }
             }
-            .navigationTitle("Moonshot")
-            .background(.darkBackground)
-            .preferredColorScheme(.dark)
         }
     }
 }

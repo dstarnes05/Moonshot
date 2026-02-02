@@ -15,6 +15,7 @@ struct MissionView: View {
     
     let mission: Mission
     let crew: [CrewMember]
+    let astronauts: [String: Astronaut]
     
     var body: some View {
         ScrollView {
@@ -28,6 +29,10 @@ struct MissionView: View {
                 
                 
                 VStack(alignment: .leading) {
+                    Text(mission.formattedLaunchDate)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .bold()
+                    
                     Rectangle()
                         .frame(height: 1)
                         .foregroundStyle(.lightBackground)
@@ -49,37 +54,7 @@ struct MissionView: View {
                         .padding(.bottom, 5)
                 }
                 .padding(.horizontal)
-                
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack {
-                        ForEach(crew, id: \.role) {crewMember in
-                            NavigationLink {
-                                AstronautView(astronaut: crewMember.astronaut)
-                            } label: {
-                                HStack {
-                                    Image(crewMember.astronaut.id)
-                                        .resizable()
-                                        .frame(width: 104, height: 72)
-                                        .clipShape(.capsule)
-                                        .overlay(
-                                            Capsule()
-                                                .strokeBorder(.white, lineWidth: 1)
-                                            )
-                                    
-                                    VStack(alignment: .leading) {
-                                        Text(crewMember.astronaut.name)
-                                            .foregroundStyle(.white)
-                                            .font(.headline)
-                                        
-                                        Text(crewMember.role)
-                                            .foregroundStyle(.white.opacity(0.5))
-                                    }
-                                }
-                                .padding(.horizontal)
-                            }
-                        }
-                    }
-                }
+                HScrollView(mission: mission, astronauts: astronauts)
             }
             .padding(.bottom)
         }
@@ -90,6 +65,7 @@ struct MissionView: View {
     
     init(mission: Mission, astronauts: [String: Astronaut]) {
         self.mission = mission
+        self.astronauts = astronauts
         
         self.crew = mission.crew.map { member in
             if let astronaut = astronauts[member.name] {
